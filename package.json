@@ -1,0 +1,31 @@
+{
+  "private": true,
+  "description": "Elements for signal analysis",
+  "scripts": {
+    "bootstrap": "lerna bootstrap",
+    "build": "npm run build-clean && lerna exec -- ../../node_modules/.bin/rollup -c ../../rollup.config.js",
+    "build-clean": "rimraf ./packages/*/lib/",
+    "eslint": "eslint packages *.js --cache",
+    "eslint-fix": "npm run eslint -- --fix",
+    "prepare": "lerna bootstrap",
+    "publish": "git pull --rebase && npm run build && npm run test-publish && lerna publish",
+    "test": "run-s build test-only eslint",
+    "test-watch": "jest --watch",
+    "test-publish": "run-s test-only eslint",
+    "test-only": "jest"
+  },
+  "devDependencies": {
+    "babel-plugin-transform-es2015-modules-commonjs": "^6.26.0",
+    "eslint": "^4.9.0",
+    "eslint-config-cheminfo": "^1.8.0",
+    "eslint-plugin-no-only-tests": "^2.0.0",
+    "jest": "^21.2.1",
+    "lerna": "^2.4.0",
+    "npm-run-all": "^4.1.1",
+    "rimraf": "^2.6.2",
+    "rollup": "^0.50.0"
+  },
+  "jest": {
+    "testEnvironment": "node"
+  }
+}

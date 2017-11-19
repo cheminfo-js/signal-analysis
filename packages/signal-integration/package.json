@@ -1,0 +1,22 @@
+{
+  "name": "signal-integration",
+  "version": "0.0.0",
+  "description": "Locates the peaks in a signal and calculates their size",
+  "main": "lib/index.js",
+  "module": "src/index.js",
+  "files": [
+    "lib",
+    "src"
+  ],
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/cheminfo-js/signal-analysis.git"
+  },
+  "keywords": [],
+  "author": "Miguel Asencio",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/cheminfo-js/signal-analysis/issues"
+  },
+  "homepage": "https://github.com/cheminfo-js/signal-analysis/tree/master/packages/signal-integration#readme"
+}
