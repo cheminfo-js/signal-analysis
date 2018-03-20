@@ -20,7 +20,6 @@
   },
   "homepage": "https://github.com/cheminfo-js/signal-analysis/tree/master/packages/signal-integration#readme",
   "dependencies": {
-    "ml-array-mean": "^1.0.1",
     "ml-savitzky-golay": "^3.0.0"
   }
 }

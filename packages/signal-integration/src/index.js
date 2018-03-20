@@ -1,49 +1,142 @@
-import {basePointCalculator} from './utils';
 import savitzkyGolay from 'ml-savitzky-golay';
 
-/**
- * Returns a very important number
- * @return {number}
- */
+import { thresholdCalculator } from './utils';
+
 export default function integration(time, intensity, options = {}) {
-    let {
-        baselinePoint = basePointCalculator(intensity),
-        baselineThreshold = 2,
-        peakWith = 7,
-    } = options;
+  let {
+    baselineThreshold = 0.1,
+    peakWindow,
+    invert = false,
+    filterOptions = {}
+  } = options;
 
-    // continuously tracks and updates the baseline
-    let difference = time[1] - time[0];
-    let firstDerivative = savitzkyGolay(intensity, difference, {
-        derivative: 1,
-        pad: 'pre',
-        padValue: 'replicate'
-    });
-    let secondDerivative = savitzkyGolay(intensity, difference, {
-        derivative: 2,
-        pad: 'pre',
-        padValue: 'replicate'
-    });
+  const { windowSize = 5, polynomial = 2 } = filterOptions;
 
-    for (var i = 0; i < intensity.length; i++) {
-        /*
-        * todo baseline tracking based in envelope
-        * the curvature of the baseline at the data point (determine by the derivative filters),
-        * must be below a critical value, as determined by the current slope sensitivity setting.
-        */
-        var baselineEnvelope = Math.abs(firstDerivative[i] + secondDerivative[i]);
+  if (invert) {
+    intensity = intensity.map((val) => -val);
+  }
 
-        if (baselineEnvelope > baselineThreshold) {
-            // peak detected
-        } else {
-            baselinePoint = intensity[i];
-        }
+  // calculates the derivatives
+  const timeDiff = Math.abs(time[1] - time[0]);
+  let firstDerivative = savitzkyGolay(intensity, timeDiff, {
+    derivative: 1,
+    pad: 'pre',
+    padValue: 'replicate',
+    windowSize,
+    polynomial
+  });
+  let secondDerivative = savitzkyGolay(intensity, timeDiff, {
+    derivative: 2,
+    pad: 'pre',
+    padValue: 'replicate',
+    windowSize,
+    polynomial
+  });
+
+  // calculates the number of point for the window
+  peakWindow = peakWindow !== undefined ? Math.ceil(peakWindow / timeDiff) : 5;
+
+  // calculates the minimum value for the baseline
+  const threshold = thresholdCalculator(baselineThreshold, firstDerivative);
+
+  // continuously tracks and updates the baseline
+  let baseline = [];
+  let peaks = [];
+
+  const peakWith = (peakWindow >> 1) + 1;
+  for (var i = 0; i < intensity.length - peakWindow - 1; i += peakWith) {
+    if (firstDerivative[i] > threshold) {
+      // identifies the start time for a peak
+      const start = {
+        index: i,
+        time: time[i],
+        intensity: intensity[i]
+      };
+
+      let peak = peakDetection(
+        time,
+        intensity,
+        i,
+        firstDerivative,
+        secondDerivative,
+        threshold
+      );
+      if (peak) {
+        peak.start = start;
+        peaks.push(peak);
+        i = peak.end.index - peakWith;
+        baseline.push({
+          time: start.time,
+          intensity: start.intensity
+        });
+        baseline.push({
+          time: peak.end.time,
+          intensity: peak.end.intensity
+        });
+      }
+    } else {
+      // continues as baseline
+      baseline.push({
+        time: time[i],
+        intensity: intensity[i]
+      });
     }
+  }
 
-    // identifies the start time for a peak
-    // finds the apex of each peak
-    // identifies the end time for the peak
-    // constructs a baseline
-    // calculates the area, height, peak width, and symmetry for each peak
-    return 42;
+  // constructs a baseline
+  // calculates the area, height, peak width, and symmetry for each peak
+  return { peaks, baseline };
+}
+
+function peakDetection(
+  time,
+  intensity,
+  start,
+  firstDerivative,
+  secondDerivative,
+  threshold
+) {
+  const len = time.length;
+
+  // begining of the peak
+  var currentIndex = start + 1;
+  while (secondDerivative[currentIndex] > 0) {
+    if (currentIndex++ > len) return false;
+  }
+  const firstInflectionPoint = {
+    index: currentIndex,
+    time: time[currentIndex],
+    intensity: intensity[currentIndex]
+  };
+
+  // finds the apex of the peak
+  while (firstDerivative[currentIndex] > 0) {
+    if (currentIndex++ > len) return false;
+  }
+  const apex = {
+    index: currentIndex,
+    time: time[currentIndex],
+    intensity: intensity[currentIndex]
+  };
+
+  while (secondDerivative[currentIndex] < 0) {
+    if (currentIndex++ > len) return false;
+  }
+  const secondInflectionPoint = {
+    index: currentIndex,
+    time: time[currentIndex],
+    intensity: intensity[currentIndex]
+  };
+
+  // identifies the end time for the peak
+  while (firstDerivative[currentIndex] < -threshold) {
+    if (currentIndex++ > len) return false;
+  }
+  const end = {
+    index: currentIndex,
+    time: time[currentIndex] || time[currentIndex - 1],
+    intensity: intensity[currentIndex] || intensity[currentIndex - 1]
+  };
+
+  return { end, apex, firstInflectionPoint, secondInflectionPoint };
 }

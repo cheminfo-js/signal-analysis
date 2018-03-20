@@ -1,11 +1,10 @@
-import mean from 'ml-array-mean';
-
-export function basePointCalculator(data, threshold = 1e3) {
-    let baselinePoint = data[0];
-    let optionalBaseline = mean(data);
-    if (Math.abs(optionalBaseline - baselinePoint) < threshold) {
-        return baselinePoint;
-    } else {
-        return optionalBaseline;
+export function thresholdCalculator(percentaje, derivative) {
+  var maxValue = -1;
+  for (var i = 0; i < derivative.length; i++) {
+    if (Math.abs(derivative[i]) > maxValue) {
+      maxValue = Math.abs(derivative[i]);
     }
+  }
+  if (maxValue === -1) return 0;
+  return maxValue * percentaje;
 }
