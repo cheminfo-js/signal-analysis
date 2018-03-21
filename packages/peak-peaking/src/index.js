@@ -2,6 +2,19 @@ import savitzkyGolay from 'ml-savitzky-golay';
 
 import { thresholdCalculator } from './utils';
 
+/**
+ * Select the peaks in a signal and track the baseline
+ * @param {Array<number>} time - x axis of the signal
+ * @param {Array<number>} intensity - y axis of the signal
+ * @param {object} [options]
+ * @param {number} [options.baselineThreshold = 0.1]
+ * @param {number} [options.peakWindow]
+ * @param {boolean} [options.invert = false]
+ * @param {object} [options.filterOptions = {}]
+ * @param {number} [options.filterOptions.windowSize = 5]
+ * @param {number} [options.filterOptions.polynomial = 2]
+ * @return {{peaks: Array, baseline: Array<{time: number, intensity: number}>}}
+ */
 export default function peakPicking(time, intensity, options = {}) {
   let {
     baselineThreshold = 0.1,
