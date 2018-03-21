@@ -1,13 +1,10 @@
 {
-  "name": "signal-integration",
+  "name": "peak-picking",
   "version": "0.0.0",
   "description": "Locates the peaks in a signal and calculates their size",
   "main": "lib/index.js",
   "module": "src/index.js",
-  "files": [
-    "lib",
-    "src"
-  ],
+  "files": ["lib", "src"],
   "repository": {
     "type": "git",
     "url": "git+https://github.com/cheminfo-js/signal-analysis.git"
@@ -18,7 +15,8 @@
   "bugs": {
     "url": "https://github.com/cheminfo-js/signal-analysis/issues"
   },
-  "homepage": "https://github.com/cheminfo-js/signal-analysis/tree/master/packages/signal-integration#readme",
+  "homepage":
+    "https://github.com/cheminfo-js/signal-analysis/tree/master/packages/peak-picking#readme",
   "dependencies": {
     "ml-savitzky-golay": "^3.0.0"
   }

@@ -3,6 +3,7 @@
 Elements for signal analysis
 
 ## Packages
-| Name | Description |
-| --- | --- |
-| [signal-integration](./packages/signal-integration) | Locates the peaks in a signal and calculates their size |
+
+| Name                                    | Description                                             |
+| --------------------------------------- | ------------------------------------------------------- |
+| [peak-picking](./packages/peak-picking) | Locates the peaks in a signal and calculates their size |

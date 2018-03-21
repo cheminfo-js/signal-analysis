@@ -1,4 +1,4 @@
-import integration from '..';
+import peakPicking from '..';
 
 // https://en.wikipedia.org/wiki/Cauchy_distribution
 function lorentzian(x, x0 = 0, gamma = 1) {
@@ -20,10 +20,10 @@ function getSimulatedSpectrum(options = {}) {
   return { time, intensity };
 }
 
-describe('integration', () => {
+describe('peakPicking', () => {
   it('simple peaks', () => {
     const spectrum = getSimulatedSpectrum();
-    const result = integration(spectrum.time, spectrum.intensity);
+    const result = peakPicking(spectrum.time, spectrum.intensity);
     expect(result.peaks).toHaveLength(3);
   });
 });

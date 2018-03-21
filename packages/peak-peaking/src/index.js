@@ -2,7 +2,7 @@ import savitzkyGolay from 'ml-savitzky-golay';
 
 import { thresholdCalculator } from './utils';
 
-export default function integration(time, intensity, options = {}) {
+export default function peakPicking(time, intensity, options = {}) {
   let {
     baselineThreshold = 0.1,
     peakWindow,
